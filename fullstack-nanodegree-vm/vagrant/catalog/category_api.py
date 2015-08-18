@@ -1,50 +1,49 @@
 from crud_api import Crud_API
-from flask import render_template, flash, redirect, url_for
+from flask import render_template, flash, redirect, url_for, abort
 from database_setup import Category, Item
 
 class Category_API(Crud_API):
     """Implements CRUD API calls for categories."""
 
-    def showAll(self, user_id, request):
+    def showAll(self, request):
         categories = self.db_session.query(Category).all()
-        if user_id:
-            return render_template('user/category_all.html', categories=categories, user_id=user_id)
-        else:
-            return render_template('public/category_all.html', categories=categories, user_id=1) # TODO
+        return render_template('category_all.html', categories=categories)
 
 
-    def show(self, category_id, user_id, request):
-        if user_id:
-            return render_template('user/category.html', user_id=user_id, category_id=category_id)
-        else:
-            return render_template('public/category.html', category_id=category_id)
+    def show(self, category_id, request):
+        return render_template('category.html', category_id=category_id)
 
 
-    def new(self, user_id, request):
-        '''
+    def new(self, login_session, request):
+
         if 'username' not in login_session:
             return redirect('/login')
-            '''
+
         if request.method == 'POST':
             category = Category(
                 name=request.form['name'],
-                user_id=1) # TODO login_session['user_id'])
+                user_id=login_session['user_id'])
             self.db_session.add(category)
             self.db_session.commit()
             flash('New category %s successfully created.' % category.name)
             return redirect(url_for('showCategories'))
         else:
-            return render_template('user/category_new.html', user_id=1) # TODO user_id=user_id)
+            return render_template('user/category_new.html', user_id=login_session['user_id'])
 
 
-    def edit(self, category_id, user_id, request):
-        category = self.db_session.query(Category).filter_by(id=category_id).one()
-        '''
+    def edit(self, category_id, login_session, request):
+        try:
+            category = self.db_session.query(Category).filter_by(id=category_id).one()
+        except:
+            abort(404)
+
         if 'username' not in login_session:
             return redirect('/login')
-        if restaurantToDelete.user_id != login_session['user_id']:
-            return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
-            '''
+
+        if category.user_id != login_session['user_id']:
+            flash('You are only authorized to edit categories you created.')
+            return redirect(url_for('showItems', category_id=category_id))
+
         if request.method == 'POST':
             category.name = request.form['name']
             self.db_session.commit()
@@ -54,14 +53,20 @@ class Category_API(Crud_API):
             return render_template('user/category_edit.html', user_id=1, category=category) # TODO user_id
 
 
-    def delete(self, category_id, user_id, request):
-        category = self.db_session.query(Category).filter_by(id=category_id).one()
-        '''
+    def delete(self, category_id, login_session, request):
+        try:
+            category = self.db_session.query(Category).filter_by(id=category_id).one()
+        except:
+            abort(404)
+
+
         if 'username' not in login_session:
             return redirect('/login')
-        if restaurantToDelete.user_id != login_session['user_id']:
-            return "<script>function myFunction() {alert('You are not authorized to delete this restaurant. Please create your own restaurant in order to delete.');}</script><body onload='myFunction()''>"
-            '''
+
+        if category.user_id != login_session['user_id']:
+            flash('You are only authorized to delete categories you created.')
+            return redirect(url_for('showItems', category_id=categuser_iduser_idory_id))
+
         if request.method == 'POST':
             name = category.name;
             items = self.db_session.query(Item).filter_by(category_id=category_id).all()

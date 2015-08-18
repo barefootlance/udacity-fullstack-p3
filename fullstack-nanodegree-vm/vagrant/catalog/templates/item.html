@@ -1,6 +1,6 @@
 <!-- TODO {- % extends "main.html" %} -->
 {% block content %}
-<!-- {- % include "header.html" %} -->
+	{% include "header.html" %}
 	<div class="row divider green">
 		<div class="col-md-12"></div>
 	</div>
@@ -9,9 +9,10 @@
 			<h1>{{item.name}}</h1>
 		</div>
 	</div>
+	{% include "flash.html" %}
 
-  <!-- only create the editing buttons if we have a user -->
-  {% if user_id %}
+  <!-- only create the editing buttons if we have the user who created the item -->
+  {% if 'username' in session and session['user_id'] == item.user_id %}
     <div class="row padding-top padding-bottom">
       <div class="col-md-1"></div>
       <div class="col-md-10 padding-none">

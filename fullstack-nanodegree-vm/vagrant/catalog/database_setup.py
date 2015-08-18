@@ -12,8 +12,8 @@ class User(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-    email = Column(String(250), nullable=False)
-    picture_url = Column(String(250))
+    email = Column(String(250), nullable=False, unique=True)
+    image_url = Column(String(250))
     created_on = Column(DateTime, default=datetime.datetime.utcnow)
     updated_on = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 

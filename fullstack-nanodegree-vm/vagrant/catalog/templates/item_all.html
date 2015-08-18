@@ -1,6 +1,6 @@
 <!-- TODO {-% extends "main.html" %} -->
 {% block content %}
-<!-- TODO {-% include "header.html" %} -->
+{% include "header.html" %}
   <div class="row top-menu">
     <div class="col-md-10"></div>
     <div class="col-md-2 text-right">
@@ -15,22 +15,10 @@
       <h1>{{category.name}} Items</h1>
     </div>
   </div>
-
-  <div class = 'flash'>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-
-        <ul>
-          {% for message in messages %}
-            <li> <strong> {{ message }} </strong> </li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-  </div>
+	{% include "flash.html" %}
 
   <!-- only create the editing buttons if we have a user -->
-  {% if user_id %}
+  {% if 'username' in session %}
     <div class="row padding-top padding-bottom">
       <div class="col-md-1"></div>
       <div class="col-md-10 padding-none">
@@ -39,16 +27,19 @@
             <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Item
           </button>
         </a>
-        <a href="{{url_for('editCategory', category_id=category.id)}}">
-          <button class="btn btn-default" id="edit-category">
-            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit {{category.name}}
-          </button>
-        </a>
-        <a href="{{url_for('deleteCategory', category_id=category.id)}}">
-          <button class="btn btn-default" id="delete-category">
-            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete {{category.name}}
-          </button>
-        </a>
+        <!-- can only edit the category if they created it -->
+        {% if session['user_id'] == category.user_id %}
+          <a href="{{url_for('editCategory', category_id=category.id)}}">
+            <button class="btn btn-default" id="edit-category">
+              <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit {{category.name}}
+            </button>
+          </a>
+          <a href="{{url_for('deleteCategory', category_id=category.id)}}">
+            <button class="btn btn-default" id="delete-category">
+              <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete {{category.name}}
+            </button>
+          </a>
+        {% endif %}
       </div>
       <div class="col-md-1"></div>
     </div>
