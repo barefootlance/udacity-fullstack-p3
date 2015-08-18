@@ -7,6 +7,9 @@ class Crud_API():
     """
     __metaclass__ = Singleton
 
+    def __init__(self, db_session):
+        self.db_session = db_session
+
     def showAll(self, *args, **kwargs):
         raise NotImplementedError( "Should have implemented this" )
 

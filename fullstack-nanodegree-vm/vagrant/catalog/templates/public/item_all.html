@@ -1,5 +1,68 @@
-<html>
-<body>
-  Public Items Page
-</body>
-</html>
+<!-- TODO {-% extends "main.html" %} -->
+{% block content %}
+<!-- TODO {-% include "header.html" %} -->
+  <div class="row top-menu">
+    <div class="col-md-10"></div>
+    <div class="col-md-2 text-right">
+    </div>
+  </div>
+  <div class="row divider blue">
+    <div class="col-md-12"></div>
+  </div>
+  <div class="row banner main">
+    <div class="col-md-1"></div>
+    <div class="col-md-11 padding-none">
+      <h1>{{category.name}} Items</h1>
+    </div>
+  </div>
+
+  <div class = 'flash'>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+
+        <ul>
+          {% for message in messages %}
+            <li> <strong> {{ message }} </strong> </li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
+
+  <!-- only create the editing buttons if we have a user -->
+  {% if user_id %}
+    <div class="row padding-top padding-bottom">
+      <div class="col-md-1"></div>
+      <div class="col-md-10 padding-none">
+        <a href="{{url_for('newItem', category_id=category.id)}}">
+          <button class="btn btn-default" id="new-item">
+            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Item
+          </button>
+        </a>
+        <a href="{{url_for('editCategory', category_id=category.id)}}">
+          <button class="btn btn-default" id="edit-category">
+            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit {{category.name}}
+          </button>
+        </a>
+        <a href="{{url_for('deleteCategory', category_id=category.id)}}">
+          <button class="btn btn-default" id="delete-category">
+            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete {{category.name}}
+          </button>
+        </a>
+      </div>
+      <div class="col-md-1"></div>
+    </div>
+  {% endif %}
+
+  {% for item in items %}
+    <a href = "{{url_for('showItem', category_id=category.id, item_id=item.id)}}">
+      <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-10 category-list">
+          <h3>{{item.name}}</h3>
+        </div>
+        <div class="col-md-1"></div>
+      </div>
+    </a>
+  {% endfor %}
+{% endblock %}
