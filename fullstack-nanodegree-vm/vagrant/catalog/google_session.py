@@ -1,12 +1,10 @@
 from oauth2_session import Oauth2_Session
 from oauth2client.client import flow_from_clientsecrets
 from oauth2client.client import FlowExchangeError
-from flask import make_response
+from flask import make_response, render_template
 import json
 import httplib2
 import requests
-from database_setup import User # TODO: refactor so we don't have to import this?
-from flask import flash # TODO: don't like having UI in this module
 
 class Google_Session(Oauth2_Session):
     """Support for a Google Oauth2 session.
@@ -16,13 +14,13 @@ class Google_Session(Oauth2_Session):
         self._client_id = json.loads(open(self.secrets_file, 'r')
                             .read())['web']['client_id']
 
-    def connect(self, request, session, db_session):
+
+    def connect(self, request, login_session, db_session):
         # Validate state token
-        print 'CONNECTING'
-        if request.args.get('state') != session['state']:
-            response = make_response(json.dumps('Invalid state parameter.'), 401)
-            response.headers['Content-Type'] = 'application/json'
+        response = self.validateStateToken(login_session, request)
+        if response:
             return response
+
         # Obtain authorization code
         code = request.data
 
@@ -47,6 +45,7 @@ class Google_Session(Oauth2_Session):
         if result.get('error') is not None:
             response = make_response(json.dumps(result.get('error')), 500)
             response.headers['Content-Type'] = 'application/json'
+            return response
 
         # Verify that the access token is used for the intended user.
         gplus_id = credentials.id_token['sub']
@@ -64,8 +63,8 @@ class Google_Session(Oauth2_Session):
             response.headers['Content-Type'] = 'application/json'
             return response
 
-        stored_credentials = session.get('credentials')
-        stored_gplus_id = session.get('gplus_id')
+        stored_credentials = login_session.get('credentials')
+        stored_gplus_id = login_session.get('gplus_id')
         if stored_credentials is not None and gplus_id == stored_gplus_id:
             response = make_response(json.dumps('Current user is already connected.'),
                                      200)
@@ -73,8 +72,8 @@ class Google_Session(Oauth2_Session):
             return response
 
         # Store the access token in the session for later use.
-        session['credentials'] = credentials
-        session['gplus_id'] = gplus_id
+        login_session['credentials'] = credentials
+        login_session['gplus_id'] = gplus_id
 
         # Get user info
         userinfo_url = "https://www.googleapis.com/oauth2/v1/userinfo"
@@ -83,68 +82,39 @@ class Google_Session(Oauth2_Session):
 
         data = answer.json()
 
-        session['username'] = data['name']
-        session['picture'] = data['picture']
-        session['email'] = data['email']
-        # ADD PROVIDER TO LOGIN SESSION
-        session['provider'] = 'google'
-
         # TODO: refactor so we don't need db_session passed in
         user_id = self.getUserID(db_session, data["email"])
         if not user_id:
-            user_id = self.createUser(session, db_session)
-        session['user_id'] = user_id
+            user_id = self.createUser(login_session, db_session)
+        self.setCurrentUserInfo(login_session, user_id, data['name'], data['email'], data['picture'])
 
-        output = ''
-        output += '<h1>Welcome, '
-        output += session['username']
-        output += '!</h1>'
-        output += '<img src="'
-        output += session['picture']
-        output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-        flash("you are now logged in as %s" % session['username'])
-        print "done!"
-        return output
+        # ADD PROVIDER TO LOGIN SESSION
+        login_session['provider'] = 'google'
+
+        return render_template("login_confirm.html");
 
 
-    def getUserID(self, db_session, email):
-        try:
-            user = db_session.query(User).filter_by(email=email).one()
-            return user.id
-        except:
-            return None
+    def disconnect(self, login_session):
 
-
-    def createUser(self, login_session, db_session):
-        newUser = User(
-                    name=login_session['username'],
-                    email=login_session['email'],
-                    image_url=login_session['picture'])
-        db_session.add(newUser)
-        db_session.commit()
-        user = db_session.query(User).filter_by(email=login_session['email']).one()
-        return user.id
-
-
-    def disconnect(self, session):
-        print 'DISCONNECTING'
         # Only disconnect a connected user.
-        credentials = session.get('credentials')
-        print 'credentials', credentials
+        credentials = login_session.get('credentials')
+
+        if 'gplus_id' in login_session:
+            del login_session['gplus_id']
+        if 'credentials' in login_session:
+            del login_session['credentials']
+
         if credentials is None:
-            print 'NOT A CONNECTED USER'
             response = make_response(
                 json.dumps('Current user not connected.'), 401)
             response.headers['Content-Type'] = 'application/json'
             return response
 
-        print 'IS A CONNECTED USER'
         access_token = credentials.access_token
         url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % access_token
         h = httplib2.Http()
         result = h.request(url, 'GET')[0]
         if result['status'] != '200':
-            print 'TOKEN WAS INVALID'
             # For whatever reason, the given token was invalid.
             response = make_response(
                 json.dumps('Failed to revoke token for given user.', 400))

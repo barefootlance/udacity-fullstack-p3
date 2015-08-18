@@ -96,7 +96,7 @@ function signInCallback(authResult) {
       console.log('Successful login for: ' + response.name);
      $.ajax({
       type: 'POST',
-      url: '/fbconnect?state={{STATE}}',
+      url: '/connect/facebook?state={{STATE}}',
       processData: false,
       data: access_token,
       contentType: 'application/octet-stream; charset=utf-8',
@@ -105,7 +105,7 @@ function signInCallback(authResult) {
         if (result) {
           $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
          setTimeout(function() {
-          window.location.href = "/restaurant";
+          window.location.href = "/category";
          }, 4000);
 
       } else {

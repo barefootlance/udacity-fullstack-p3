@@ -5,6 +5,7 @@ from database_setup import Base
 from category_api import Category_API
 from item_api import Item_API
 from google_session import Google_Session
+from facebook_session import Facebook_Session
 import random, string
 
 app = Flask(__name__)
@@ -86,7 +87,15 @@ def googleConnect():
     #    oauth2_session.disconnect()
     oauth2_session = Google_Session('secrets/google_secrets.json')
     result = oauth2_session.connect(request, login_session, db_session)
-    print result
+    return result
+
+
+@app.route('/connect/facebook', methods=['POST'])
+def facebookConnect():
+    #if oauth2_session:
+    #    oauth2_session.disconnect()
+    oauth2_session = Facebook_Session('secrets/facebook_secrets.json')
+    result = oauth2_session.connect(request, login_session, db_session)
     return result
 
 
@@ -104,22 +113,20 @@ def showLogin():
 @app.route('/disconnect')
 def disconnect():
     if 'provider' in login_session:
-        if login_session['provider'] == 'google':
+        oauth2_session = None
+        provider = login_session['provider']
+        if provider == 'google':
             oauth2_session = Google_Session('secrets/google_secrets.json')
             oauth2_session.disconnect(login_session)
-            del login_session['gplus_id']
-            del login_session['credentials']
-        '''
-        if login_session['provider'] == 'facebook':
-            fbdisconnect()
-            del login_session['facebook_id']
-        '''
-        del login_session['username']
-        del login_session['email']
-        del login_session['picture']
-        del login_session['user_id']
+        elif provider == 'facebook':
+            oauth2_session = Facebook_Session('secrets/facebook_secrets.json')
+            oauth2_session.disconnect(login_session)
+
+        if oauth2_session:
+            oauth2_session.clearCurrentUserInfo(login_session)
+
         del login_session['provider']
-        flash("You have successfully been logged out.")
+
         return redirect(url_for('showCategories'))
     else:
         flash("You were not logged in")
