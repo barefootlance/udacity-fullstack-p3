@@ -46,11 +46,6 @@ class Facebook_Session(Oauth2_Session):
         user_name = data['name']
         user_email = data['email']
 
-        # TODO: refactor so we don't need db_session passed in
-        user_id = self.getUserID(db_session, data["email"])
-        if not user_id:
-            user_id = self.createUser(login_session, db_session)
-
         # The token must be stored in the login_session in order to properly logout, let's strip out the information before the equals sign in our token
         stored_token = token.split("=")[1]
         login_session['access_token'] = stored_token
@@ -61,6 +56,11 @@ class Facebook_Session(Oauth2_Session):
         result = h.request(url, 'GET')[1]
         data = json.loads(result)
         user_image_url = data["data"]["url"]
+
+        # TODO: refactor so we don't need db_session passed in
+        user_id = self.getUserID(db_session, user_email)
+        if not user_id:
+            user_id = self.createUser(user_name, user_email, user_image_url, db_session)
 
         self.setCurrentUserInfo(login_session, user_id, user_name, user_email, user_image_url)
 

@@ -18,14 +18,11 @@ class Oauth2_Session(object):
         raise NotImplementedError( "Should have implemented this" )
 
 
-    def createUser(self, login_session, db_session):
-        newUser = User(
-                    name=login_session['username'],
-                    email=login_session['email'],
-                    image_url=login_session['picture'])
+    def createUser(self, name, email, image_url, db_session):
+        newUser = User(name=name, email=email, image_url=image_url)
         db_session.add(newUser)
         db_session.commit()
-        user = db_session.query(User).filter_by(email=login_session['email']).one()
+        user = db_session.query(User).filter_by(email=email).one()
         return user.id
 
 

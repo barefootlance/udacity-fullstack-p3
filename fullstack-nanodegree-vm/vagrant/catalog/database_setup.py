@@ -6,6 +6,11 @@ import datetime
 
 Base = declarative_base()
 
+def isoDateString(datetime):
+    """Returns a date time string formatted correctly for international utc.
+    NOTE: YES, ALL OUR TIMESTAMPS ARE UTC. YOURS SHOULD BE TOO!
+    """
+    return datetime.isoformat() + "+00:00"
 
 class User(Base):
     __tablename__ = 'user'
@@ -34,8 +39,9 @@ class Category(Base):
        return {
            'id'         : self.id,
            'name'       : self.name,
-           'created_on' : self.created_on,
-           'updated_on' : self.updated_on,
+           'created_on' : isoDateString(self.created_on),
+           'updated_on' : isoDateString(self.updated_on),
+           'user_id'    : self.user_id,
        }
 
 
@@ -62,8 +68,9 @@ class Item(Base):
             'name'          : self.name,
             'description'   : self.description,
             'image_url'     : self.image_url,
-            'created_on'    : self.created_on,
-            'updated_on'    : self.updated_on,
+            'created_on'    : isoDateString(self.created_on),
+            'updated_on'    : isoDateString(self.updated_on),
+            'user_id'       : self.user_id,
        }
 
 

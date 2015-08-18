@@ -1,23 +1,34 @@
 from crud_api import Crud_API
-from flask import render_template, flash, redirect, url_for, abort
+from flask import render_template, flash, redirect, url_for, abort, jsonify
 from database_setup import Category, Item
+import json
 
 class Item_API(Crud_API):
     """Implements CRUD API calls for items."""
 
-    def showAll(self, category_id, request):
+    def showAll(self, category_id, request, format=None):
         try:
-            category = self.db_session.query(Category).filter_by(id=category_id).one()
             items = self.db_session.query(Item).filter_by(category_id=category_id).all()
-            return render_template('item_all.html', category=category, items=items)
+            if format == 'JSON':
+                return jsonify(Items=[i.serialize for i in items])
+            elif not format:
+                category = self.db_session.query(Category).filter_by(id=category_id).one()
+                return render_template('item_all.html', category=category, items=items)
+            else:
+                abort(501)
         except:
             abort(404)
 
 
-    def show(self, category_id, item_id, request):
+    def show(self, category_id, item_id, request, format=None):
         try:
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
-            return render_template('item.html', item=item)
+            if format == 'JSON':
+                return jsonify(Item=item.serialize)
+            elif not format:
+                return render_template('item.html', item=item)
+            else:
+                abort(501)
         except:
             abort(404)
 
@@ -28,7 +39,7 @@ class Item_API(Crud_API):
             category = self.db_session.query(Category).filter_by(id=category_id).one()
         except:
             abort(404)
-            
+
         if 'username' not in login_session:
             return redirect('/login')
 

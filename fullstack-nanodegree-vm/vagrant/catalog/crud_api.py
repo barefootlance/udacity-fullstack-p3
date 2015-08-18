@@ -1,5 +1,4 @@
 from singleton import Singleton
-from flask import render_template
 
 class Crud_API(object):
     """Singleton class to allow for refactoring of API calls

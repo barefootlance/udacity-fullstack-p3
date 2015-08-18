@@ -85,7 +85,7 @@ class Google_Session(Oauth2_Session):
         # TODO: refactor so we don't need db_session passed in
         user_id = self.getUserID(db_session, data["email"])
         if not user_id:
-            user_id = self.createUser(login_session, db_session)
+            user_id = self.createUser(data['name'], data['email'], data['picture'], db_session)
         self.setCurrentUserInfo(login_session, user_id, data['name'], data['email'], data['picture'])
 
         # ADD PROVIDER TO LOGIN SESSION

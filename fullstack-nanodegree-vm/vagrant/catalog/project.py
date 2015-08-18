@@ -1,12 +1,12 @@
-from flask import Flask, request, session as login_session, render_template, flash, redirect, url_for
+from flask import Flask, request, session as login_session, render_template, flash, redirect, url_for, abort
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from database_setup import Base
+from database_setup import Base, Category, Item
 from category_api import Category_API
 from item_api import Item_API
 from google_session import Google_Session
 from facebook_session import Facebook_Session
-import random, string
+import random, string, sys
 
 app = Flask(__name__)
 
@@ -20,8 +20,6 @@ db_session = DBSession()
 
 category_api = Category_API(db_session)
 item_api = Item_API(db_session)
-
-oauth2_session = None
 
 
 def getCurrentUserId(): # TODO!
@@ -99,7 +97,15 @@ def facebookConnect():
     return result
 
 
-# Create anti-forgery state token
+@app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
+def editCategory(category_id):
+    return category_api.edit(category_id, login_session, request)
+
+
+@app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
+def deleteCategory(category_id):
+    return category_api.delete(category_id, login_session, request)
+
 @app.route('/login')
 def showLogin():
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
@@ -131,6 +137,38 @@ def disconnect():
     else:
         flash("You were not logged in")
         return redirect(url_for('showCategories'))
+
+
+@app.route('/category/<int:category_id>/JSON')
+def categoryJSON(category_id):
+    try:
+        return category_api.show(category_id, request, 'JSON')
+    except:
+        abort(404)
+
+
+@app.route('/category/JSON')
+def categoriesJSON():
+    try:
+        return category_api.showAll(request, 'JSON')
+    except:
+        abort(404)
+
+
+@app.route('/category/<int:category_id>/item/<int:item_id>/JSON')
+def itemJSON(category_id, item_id):
+    try:
+        return item_api.show(category_id, item_id, request, 'JSON')
+    except:
+        abort(404)
+
+
+@app.route('/category/<int:category_id>/item/JSON')
+def itemsJSON(category_id):
+    try:
+        return item_api.showAll(category_id, request, 'JSON')
+    except:
+        abort(404)
 
 
 if __name__ == '__main__':
