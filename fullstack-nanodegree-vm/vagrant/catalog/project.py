@@ -140,33 +140,41 @@ def disconnect():
 
 
 @app.route('/category/<int:category_id>/JSON')
+@app.route('/category/<int:category_id>/XML')
 def categoryJSON(category_id):
     try:
-        return category_api.show(category_id, request, 'JSON')
+        format = request.path.split('/')[-1]
+        return category_api.show(category_id, request, format)
     except:
         abort(404)
 
 
 @app.route('/category/JSON')
+@app.route('/category/XML')
 def categoriesJSON():
     try:
-        return category_api.showAll(request, 'JSON')
+        format = request.path.split('/')[-1]
+        return category_api.showAll(request, format)
     except:
         abort(404)
 
 
 @app.route('/category/<int:category_id>/item/<int:item_id>/JSON')
+@app.route('/category/<int:category_id>/item/<int:item_id>/XML')
 def itemJSON(category_id, item_id):
     try:
-        return item_api.show(category_id, item_id, request, 'JSON')
+        format = request.path.split('/')[-1]
+        return item_api.show(category_id, item_id, request, format)
     except:
         abort(404)
 
 
 @app.route('/category/<int:category_id>/item/JSON')
+@app.route('/category/<int:category_id>/item/XML')
 def itemsJSON(category_id):
     try:
-        return item_api.showAll(category_id, request, 'JSON')
+        format = request.path.split('/')[-1]
+        return item_api.showAll(category_id, request, format)
     except:
         abort(404)
 

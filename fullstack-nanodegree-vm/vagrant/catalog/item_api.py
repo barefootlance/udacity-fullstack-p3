@@ -2,6 +2,9 @@ from crud_api import Crud_API
 from flask import render_template, flash, redirect, url_for, abort, jsonify
 from database_setup import Category, Item
 import json
+import datetime
+import xmlify
+import string
 
 class Item_API(Crud_API):
     """Implements CRUD API calls for items."""
@@ -11,6 +14,8 @@ class Item_API(Crud_API):
             items = self.db_session.query(Item).filter_by(category_id=category_id).all()
             if format == 'JSON':
                 return jsonify(Items=[i.serialize for i in items])
+            elif format == 'XML':
+                return string.replace(xmlify.dumps([i.serialize for i in items], 'items'), 'items-item', 'item')
             elif not format:
                 category = self.db_session.query(Category).filter_by(id=category_id).one()
                 return render_template('item_all.html', category=category, items=items)
@@ -25,6 +30,8 @@ class Item_API(Crud_API):
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
             if format == 'JSON':
                 return jsonify(Item=item.serialize)
+            elif format == 'XML':
+                return xmlify.dumps(item.serialize, 'item')
             elif not format:
                 return render_template('item.html', item=item)
             else:
