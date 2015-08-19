@@ -6,6 +6,7 @@ from category_api import Category_API
 from item_api import Item_API
 from google_session import Google_Session
 from facebook_session import Facebook_Session
+from amazon_session import Amazon_Session
 import random, string, sys
 
 app = Flask(__name__)
@@ -97,6 +98,20 @@ def facebookConnect():
     return result
 
 
+@app.route('/connect/amazon', methods=['GET'])
+def amazonConnect():
+    #if oauth2_session:
+    #    oauth2_session.disconnect()
+    oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
+    result = oauth2_session.connect(request, login_session, db_session)
+    #return result
+    # TODO HACK: we're getting Amazon synchronously (which is how they
+    # do it in their example). Would like it to behave like the other
+    # logins (or maybe not - maybe they should act like this...consistency!)
+    # Anyway, we hop straight back to the main page.
+    return showCategories()
+
+
 @app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
 def editCategory(category_id):
     return category_api.edit(category_id, login_session, request)
@@ -105,6 +120,7 @@ def editCategory(category_id):
 @app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
 def deleteCategory(category_id):
     return category_api.delete(category_id, login_session, request)
+
 
 @app.route('/login')
 def showLogin():
@@ -126,6 +142,9 @@ def disconnect():
             oauth2_session.disconnect(login_session)
         elif provider == 'facebook':
             oauth2_session = Facebook_Session('secrets/facebook_secrets.json')
+            oauth2_session.disconnect(login_session)
+        elif provider == 'amazon':
+            oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
             oauth2_session.disconnect(login_session)
 
         if oauth2_session:

@@ -9,7 +9,6 @@ class Category_API(Crud_API):
     """Implements CRUD API calls for categories."""
 
     def showAll(self, request, format=None):
-        print "showAll format", format
         try:
             categories = self.db_session.query(Category).all()
             if format == 'JSON':
