@@ -109,4 +109,4 @@ class Item_API(Crud_API):
             flash('Item %s successfully deleted.' % name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_delete.html', user_id=user_id, item=item)
+            return render_template('user/item_delete.html', item=item)

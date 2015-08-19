@@ -9,6 +9,8 @@ class Category_API(Crud_API):
     """Implements CRUD API calls for categories."""
 
     def showAll(self, request, format=None):
+        print request
+        print format
         try:
             categories = self.db_session.query(Category).all()
             if format == 'JSON':
@@ -74,7 +76,7 @@ class Category_API(Crud_API):
             flash('Category %s successfully updated.' % category.name)
             return redirect(url_for('showCategories'))
         else:
-            return render_template('user/category_edit.html', user_id=1, category=category) # TODO user_id
+            return render_template('user/category_edit.html', category=category)
 
 
     def delete(self, category_id, login_session, request):
@@ -101,4 +103,4 @@ class Category_API(Crud_API):
             flash('Category %s successfully deleted.' % name)
             return redirect(url_for('showCategories'))
         else:
-            return render_template('user/category_delete.html', user_id=user_id, category=category)
+            return render_template('user/category_delete.html', category=category)
