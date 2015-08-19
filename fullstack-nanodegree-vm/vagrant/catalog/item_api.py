@@ -27,13 +27,14 @@ class Item_API(Crud_API):
 
     def show(self, category_id, item_id, request, format=None):
         try:
+            category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
             if format == 'JSON':
                 return jsonify(Item=item.serialize)
             elif format == 'XML':
                 return xmlify.dumps(item.serialize, 'item')
             elif not format:
-                return render_template('item.html', item=item)
+                return render_template('item.html', category=category, item=item)
             else:
                 abort(501)
         except:
@@ -62,11 +63,12 @@ class Item_API(Crud_API):
             flash('New item %s successfully created.' % item.name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_new.html')
+            return render_template('user/item_new.html', category=category)
 
 
     def edit(self, category_id, item_id, login_session, request):
         try:
+            category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
         except:
             abort(404)
@@ -86,11 +88,12 @@ class Item_API(Crud_API):
             flash('Item %s successfully updated.' % item.name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_edit.html', user_id=1, item=item) # TODO user_id
+            return render_template('user/item_edit.html', category=category, item=item)
 
 
     def delete(self, category_id, item_id, login_session, request):
         try:
+            category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
         except:
             abort(404)
@@ -103,10 +106,11 @@ class Item_API(Crud_API):
             return redirect(url_for('showItem', category_id=category_id, item_id=item_id))
 
         if request.method == 'POST':
+            # TODO Don't delete on Cancel!!
             name = item.name;
             self.db_session.delete(item)
             self.db_session.commit()
             flash('Item %s successfully deleted.' % name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_delete.html', item=item)
+            return render_template('user/item_delete.html', category=category, item=item)

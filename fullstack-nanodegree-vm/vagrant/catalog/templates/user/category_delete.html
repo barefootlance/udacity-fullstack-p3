@@ -1,6 +1,9 @@
 {% extends "main.html" %}
+{% block page_title %}Delete {{category.name}}{% endblock %}
 {% block content %}
-{% include "header.html" %}
+	<div class="row divider blue"><div class="col-md-12"></div></div>
+	<h1 style="text-align:center"><span style="font-weight:bold">Delete</span> {{category.name}}</h1>
+	<div class="row divider blue"><div class="col-md-12"></div></div>
 <h2> Are you sure you want to delete the {{category.name}} category and all its items? </h2>
 
 <form action="#" method = 'post'>

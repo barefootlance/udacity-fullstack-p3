@@ -75,8 +75,8 @@ h3 {
 	margin-right: 10px;
 }
 .top-menu {
-	padding-top: 30px;
-	padding-bottom: 30px;
+	padding-top: 0px;
+	padding-bottom: 0px;
 }
 .top-menu p {
 	margin-bottom: 0;
@@ -104,7 +104,12 @@ h3 {
 	background-position: right;
 	background-repeat: no-repeat;
 	background-size: cover;
+	/* this serves to hide the anchor. See http://ran.ge/2009/11/11/css-trick-turning-a-background-image-into-a-clickable-link/ */
+	/*text-indent:-9999px;*/
+	display:block;
+	text-decoration: none;
 }
+
 .banner.menu {
 	height: 150px;
 	background-color: #E1E17F;

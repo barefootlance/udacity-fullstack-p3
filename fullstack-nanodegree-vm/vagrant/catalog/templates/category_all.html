@@ -1,22 +1,6 @@
 {% extends "main.html" %}
+{% block page_title %}Catalog{% endblock %}
 {% block content %}
-{% include "header.html" %}
-	<div class="row top-menu">
-		<div class="col-md-10"></div>
-		<div class="col-md-2 text-right">
-					</div>
-	</div>
-	<div class="row divider blue">
-		<div class="col-md-12"></div>
-	</div>
-	<div class="row banner main">
-		<div class="col-md-1"></div>
-		<div class="col-md-11 padding-none">
-			<h1>Catalog</h1>
-		</div>
-	</div>
-	{% include "flash.html" %}
-
 	<!-- only create the add category button if we have a user -->
   {% if 'username' in session %}
 		<div class="row padding-top padding-bottom">

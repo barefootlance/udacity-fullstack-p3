@@ -1,18 +1,31 @@
-<div class="row top-menu">
-	<div class="col-md-6">
-		<a href="{{url_for('showCategories')}}">
-			<span class="glyphicon glyphicon-home" aria-hidden="true"></span>Show All Categories
-		</a>
+<div class="top-menu">
+<div class="banner main">
+	<div class="divider blue">
 	</div>
-	<div class="col-md-6 text-right">
-		{%if 'username' not in session %}
-			<a href="{{url_for('showLogin')}}">Click Here to Log in</a>
-		{% else %}
-			<a href="{{url_for('disconnect')}}">Log out</a>
-			<p>Email: {{session['email']}}</p>
-			<p>Username: {{session['username']}}</p>
-			<p>Picture: {{session['picture']}}</p>
-			<p>user_id: {{session['user_id']}}</p>
-		{% endif %}
+	<div style="height:50px padding-right:50px">
+		<table style="float:right">
+			<tr>
+				{%if 'username' not in session %}
+				<td>
+					<a href="{{url_for('showLogin')}}">Click Here to Log in</a>
+				</td>
+				{% else %}
+				<td>Welcome {{session['username']}}! </td>
+      		{% if session['picture'] %}
+				<td>
+        	<a href="{{session['picture']}}">
+          	<img src="{{session['picture']}}" alt="{{session['username']}}" style="height:50px">
+					</a>
+				</td>
+      		{% endif %}
+				<td>
+					<a href="{{url_for('disconnect')}}">Log out</a>
+				</td>
+					{% endif %}
+				</tr>
+			</table>
+		</div>
+		<div class="col-md-1"></div>
 	</div>
+	<h1>{% block page_title %}{% endblock %}</h1>
 </div>
