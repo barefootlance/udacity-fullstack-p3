@@ -1,5 +1,17 @@
 {% extends "main.html" %}
 {% block page_title %}{{category.name}}{% endblock %}
 {% block search %}'https://www.google.com/#q="{{category.name}}"'{% endblock %}
+{% block head_scripts %}
+{% endblock %}
 {% block content %}
+  <div class="container" grid-auto-flow=row>
+  {% for i in items %}
+  <div class="col-sm-6 col-md-4 col-lg-3 movie-tile text-center"  width="220" height="342">
+    <a style="text-decoration:none" href="{{url_for('showItem', category_id = category.id, item_id = i.id)}}" width="100%">
+      <img src="{{i.image_url}}" width="90%" align="center">
+    </a>
+    <p>{{i.name}}</p>
+  </div>
+  {% endfor %}
+  </div>
 {% endblock %}

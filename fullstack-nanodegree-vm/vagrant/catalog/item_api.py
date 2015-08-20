@@ -26,7 +26,6 @@ class Item_API(Crud_API):
             elif not format:
                 category = self.db_session.query(Category).filter_by(id=category_id).one()
                 categories = self.getCategories()
-                print categories
                 return render_template('item_all.html', category=category, categories=categories, items=items, item=None)
             else:
                 abort(501)
