@@ -1,6 +1,6 @@
 from crud_api import Crud_API
 from flask import render_template, flash, redirect, url_for, abort, jsonify
-from database_setup import Category, Item
+from database_setup import Category, Item, User
 from sqlalchemy import collate
 import json
 import datetime
@@ -26,7 +26,8 @@ class Item_API(Crud_API):
             elif not format:
                 category = self.db_session.query(Category).filter_by(id=category_id).one()
                 categories = self.getCategories()
-                return render_template('item_all.html', category=category, categories=categories, items=items, item=None)
+                user = self.db_session.query(User).filter_by(id=category.user_id).one()
+                return render_template('item_all.html', category=category, categories=categories, items=items, item=None, user=user)
             else:
                 abort(501)
         except:
@@ -44,7 +45,8 @@ class Item_API(Crud_API):
                 category = self.db_session.query(Category).filter_by(id=category_id).one()
                 categories = self.getCategories()
                 items = self.getItems(category_id)
-                return render_template('item.html', category=category, categories=categories, item=item, items=items)
+                user = self.db_session.query(User).filter_by(id=category.user_id).one()
+                return render_template('item.html', category=category, categories=categories, item=item, items=items, user=user)
             else:
                 abort(501)
         except:
@@ -117,7 +119,6 @@ class Item_API(Crud_API):
             return redirect(url_for('showItem', category_id=category_id, item_id=item_id, items=self.getItems()))
 
         if request.method == 'POST':
-            # TODO Don't delete on Cancel!!
             name = item.name;
             self.db_session.delete(item)
             self.db_session.commit()

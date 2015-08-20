@@ -18,4 +18,10 @@
 		<p>{{item.description}}</p>
 		</div>
 	</div>
+	{% if 'username' in session %}
+  <hr>
+	<p>Owned by: {{user.name}}</p>
+	<p>Created: {{item.created_on}}</p>
+	<p>Updated: {{item.updated_on}}</p>
+	{% endif %}
 {% endblock %}

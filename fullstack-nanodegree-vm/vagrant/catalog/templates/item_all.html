@@ -14,4 +14,10 @@
   </div>
   {% endfor %}
   </div>
+	{% if 'username' in session %}
+  <hr>
+	<p>Owned by: {{user.name}}</p>
+	<p>Created: {{category.created_on}}</p>
+	<p>Updated: {{category.updated_on}}</p>
+	{% endif %}
 {% endblock %}
