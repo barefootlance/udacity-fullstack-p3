@@ -16,6 +16,9 @@ class Category_API(Crud_API):
     def getItems(self, category_id):
         return self.db_session.query(Item).filter_by(category_id=category_id).order_by(collate(Item.name, 'NOCASE')).all()
 
+    def getAllItems(self):
+        return self.db_session.query(Item).order_by(collate(Item.name, 'NOCASE')).all()
+
     def showAll(self, request, format=None):
         try:
             categories = self.getCategories()
@@ -24,7 +27,8 @@ class Category_API(Crud_API):
             elif format == 'XML':
                 return string.replace(xmlify.dumps([c.serialize for c in categories], 'categories'), 'categories-item', 'category')
             elif not format:
-                return render_template('category_all.html', categories=categories, category=None, items=None, item=None)
+                items = self.getAllItems()
+                return render_template('category_all.html', categories=categories, category=None, items=items, item=None)
             else:
                 abort(501)
         except:
