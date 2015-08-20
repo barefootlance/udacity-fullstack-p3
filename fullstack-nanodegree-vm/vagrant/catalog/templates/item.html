@@ -2,7 +2,7 @@
 {% block page_title %}{{category.name}}{% endblock %}
 {% block search %}'https://www.google.com/#q="{{category.name}}"'{% endblock %}
 {% block content %}
-	<a href='https://www.google.com/#q="{{item.name}}"' style="text-decoration:none;">
+	<a href='https://www.google.com/#q="{{item.name}}"' target="_blank" style="text-decoration:none;">
 		<h1 style="text-align:center">{{item.name}}</h1>
 	</a>
 	<div class="divider blue" style="width:100%"></div>

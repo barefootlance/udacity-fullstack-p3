@@ -15,14 +15,16 @@
 		<!-- Header -->
 		<div class="divider blue"></div>
 		<div class="top-menu" id="header">
-			<a class="row banner main" href={% block search %}{{url_for("showCategories")}}{% endblock %}>
+			<a class="row banner main" href={% block search %}{{url_for("showCategories")}}{% endblock %}  target="_blank">
 				<div style="height:50px padding-right:50px">
 					<table style="width=100%; float:right">
 						<tr>
 							{%if 'username' not in session %}
+              {% block show_login %}
 							<td style="height:50px;">
 								<a href="{{url_for('showLogin')}}" style="padding-right:50px;">Click Here to Log in</a>
 							</td>
+              {% endblock %}
 							{% else %}
 							<td>
 								<a href='https://www.google.com/#q="{{session['username']}}"' style="text-decoration:none">Welcome, {{session['username']}}!</a>
@@ -47,6 +49,7 @@
 		</div>
 		<div class="divider blue"></div>
 		{% include "flash.html" %}
+    <div style="padding-bottom:30px"></div>
 		<!-- END Header -->
     <!-- Autsize the table columns -->
     <!-- From http://stackoverflow.com/questions/11671559/how-do-i-make-one-table-column-to-be-auto-size-according-to-its-content-and-seco -->
@@ -55,17 +58,17 @@
           var textLength = $('#Test').text().length;
           var textWidth = $('#Test').innerWidth();
           var charWidth = textWidth / textLength;
-          console.log('charWidth: ' + charWidth);
+          //console.log('charWidth: ' + charWidth);
           var menuTextLength = 0;
           $('#menu').find('a').each(function() {
             trimmed = $.trim($(this).text())
-            console.log(trimmed)
-              console.log(trimmed.length)
+            //console.log(trimmed)
+            // console.log(trimmed.length)
             menuTextLength = Math.max(trimmed.length, menuTextLength);
           });
-          console.log('menuTextLength: ' + menuTextLength);
+          //console.log('menuTextLength: ' + menuTextLength);
           var menuWidth = menuTextLength * charWidth * 1.2 /*padding*/;
-          console.log('menuWidth: ' + menuWidth);
+          //console.log('menuWidth: ' + menuWidth);
           $('#menu').width(menuWidth);
         })
     </script>
@@ -75,12 +78,12 @@
             <td id="left" style="display: inline-block; width: 100%; padding-top:30px">
                 <!-- Menu -->
                 <div class="container" id="menu">
-
                   <div>
                     <a href="{{url_for('showCategories')}}">Catalog</a>
                   </div>
+                  {% if categories or items %}
                   <hr/>
-
+                  {% endif %}
                   <!-- CATEGORY EDITING LINKS -->
                   <!-- can only edit the category if they created it -->
                   {% if 'username' in session %}

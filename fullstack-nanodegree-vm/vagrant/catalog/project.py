@@ -35,8 +35,6 @@ def showCategories():
 
 @app.route('/category/<int:category_id>/', methods=['GET'])
 def showCategory(category_id):
-    # TODO: do we want to do something different here?
-    #return category_api.show(category_id, request)
     return showItems(category_id)
 
 
@@ -82,8 +80,6 @@ def deleteItem(category_id, item_id):
 
 @app.route('/connect/google', methods=['POST'])
 def googleConnect():
-    #if oauth2_session:
-    #    oauth2_session.disconnect()
     oauth2_session = Google_Session('secrets/google_secrets.json')
     result = oauth2_session.connect(request, login_session, db_session)
     return result
@@ -91,8 +87,6 @@ def googleConnect():
 
 @app.route('/connect/facebook', methods=['POST'])
 def facebookConnect():
-    #if oauth2_session:
-    #    oauth2_session.disconnect()
     oauth2_session = Facebook_Session('secrets/facebook_secrets.json')
     result = oauth2_session.connect(request, login_session, db_session)
     return result
@@ -100,8 +94,6 @@ def facebookConnect():
 
 @app.route('/connect/amazon', methods=['GET'])
 def amazonConnect():
-    #if oauth2_session:
-    #    oauth2_session.disconnect()
     oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
     result = oauth2_session.connect(request, login_session, db_session)
     #return result

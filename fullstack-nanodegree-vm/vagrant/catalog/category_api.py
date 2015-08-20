@@ -96,7 +96,6 @@ class Category_API(Crud_API):
         except:
             abort(404)
 
-
         if 'username' not in login_session:
             return redirect('/login')
 
