@@ -1,44 +1,5 @@
 {% extends "main.html" %}
 {% block page_title %}{{category.name}}{% endblock %}
+{% block search %}'https://www.google.com/#q="{{category.name}}"'{% endblock %}
 {% block content %}
-
-  <!-- only create the editing buttons if we have a user -->
-  {% if 'username' in session %}
-    <div class="row padding-top padding-bottom">
-      <div class="col-md-1"></div>
-      <div class="col-md-10 padding-none">
-        <a href="{{url_for('newItem', category_id=category.id)}}">
-          <button class="btn btn-default" id="new-item">
-            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Add Item
-          </button>
-        </a>
-        <!-- can only edit the category if they created it -->
-        {% if session['user_id'] == category.user_id %}
-          <a href="{{url_for('editCategory', category_id=category.id)}}">
-            <button class="btn btn-default" id="edit-category">
-              <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit {{category.name}}
-            </button>
-          </a>
-          <a href="{{url_for('deleteCategory', category_id=category.id)}}">
-            <button class="btn btn-default" id="delete-category">
-              <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete {{category.name}}
-            </button>
-          </a>
-        {% endif %}
-      </div>
-      <div class="col-md-1"></div>
-    </div>
-  {% endif %}
-
-  {% for item in items %}
-    <a href = "{{url_for('showItem', category_id=category.id, item_id=item.id)}}">
-      <div class="row">
-        <div class="col-md-1"></div>
-        <div class="col-md-10 category-list">
-          <h3>{{item.name}}</h3>
-        </div>
-        <div class="col-md-1"></div>
-      </div>
-    </a>
-  {% endfor %}
 {% endblock %}

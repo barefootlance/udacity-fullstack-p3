@@ -1,40 +1,20 @@
 {% extends "main.html" %}
 {% block page_title %}{{category.name}}{% endblock %}
+{% block search %}'https://www.google.com/#q="{{category.name}}"'{% endblock %}
 {% block content %}
-	<div class="row divider green"><div class="col-md-12"></div></div>
-	<h1 style="text-align:center">{{item.name}}</h1>
-	<div class="row divider green"><div class="col-md-12"></div></div>
+	<a href='https://www.google.com/#q="{{item.name}}"' style="text-decoration:none;">
+		<h1 style="text-align:center">{{item.name}}</h1>
+	</a>
+	<div class="divider blue" style="width:100%;"></div>
 
-  <!-- only create the editing buttons if we have the user who created the item -->
-  {% if 'username' in session and session['user_id'] == item.user_id %}
-    <div class="row padding-top padding-bottom">
-      <div class="col-md-1"></div>
-      <div class="col-md-10 padding-none">
-        <a href="{{url_for('editItem', category_id=item.category_id, item_id=item.id)}}">
-          <button class="btn btn-default" id="edit-item">
-            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Edit {{item.name}}
-          </button>
-        </a>
-        <a href="{{url_for('deleteItem', category_id=item.category_id, item_id=item.id)}}">
-          <button class="btn btn-default" id="delete-item">
-            <span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Delete {{item.name}}
-          </button>
-        </a>
-      </div>
-      <div class="col-md-1"></div>
-    </div>
-  {% endif %}
-
-	<div class="row">
-		<div class="col-md-6 col-md-offset-1 padding-top">
-      <p><label for="name">Name: {{item.name}}</label></p>
-			<p><label for="description">Description: {{item.description}}</label></p>
-			<p><label for="image_url">Image URL: {{item.image_url}}</label></p>
-      {% if item.image_url %}
-        <a href="{{item.image_url}}">
-          <img src="{{item.image_url}}" alt="{{item.name}}" style="width:25%">
-        </a>
-      {% endif %}
+	<div>
+		<div class="col-md-6 col-md-offset-1 padding-top" style="text-align:center; ">
+		{% if item.image_url %}
+			<a href="{{item.image_url}}">
+				<img src="{{item.image_url}}" alt="{{item.name}}" style="width:50%; padding-bottom:30px;">
+			</a>
+		{% endif %}
 		</div>
+		<p>{{item.description}}</p>
 	</div>
 {% endblock %}

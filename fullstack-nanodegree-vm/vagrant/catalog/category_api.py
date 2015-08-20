@@ -8,17 +8,22 @@ import string
 class Category_API(Crud_API):
     """Implements CRUD API calls for categories."""
 
+# TODO: duplicate code
+    def getCategories(self):
+        return self.db_session.query(Category).order_by(Category.name).all()
+
+    def getItems(self, category_id):
+        return self.db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+
     def showAll(self, request, format=None):
-        print request
-        print format
         try:
-            categories = self.db_session.query(Category).all()
+            categories = self.getCategories()
             if format == 'JSON':
                 return jsonify(Categories=[c.serialize for c in categories])
             elif format == 'XML':
                 return string.replace(xmlify.dumps([c.serialize for c in categories], 'categories'), 'categories-item', 'category')
             elif not format:
-                return render_template('category_all.html', categories=categories)
+                return render_template('category_all.html', categories=categories, category=None, items=None, item=None)
             else:
                 abort(501)
         except:
@@ -33,7 +38,7 @@ class Category_API(Crud_API):
             elif format == 'XML':
                 return xmlify.dumps(category.serialize, 'category')
             elif format == None:
-                return render_template('category.html', category=category)
+                return render_template('category.html', category=category, categories=self.getCategories(), items=self.getItems(category.id))
             else:
                 abort(501)
         except:
@@ -51,10 +56,11 @@ class Category_API(Crud_API):
                 user_id=login_session['user_id'])
             self.db_session.add(category)
             self.db_session.commit()
+            self.db_session.refresh(category)
             flash('New category %s successfully created.' % category.name)
-            return redirect(url_for('showCategories'))
+            return redirect(url_for('newItem', category_id=category.id))
         else:
-            return render_template('user/category_new.html', user_id=login_session['user_id'])
+            return render_template('user/category_new.html', user_id=login_session['user_id'], categories=self.getCategories())
 
 
     def edit(self, category_id, login_session, request):
@@ -76,7 +82,7 @@ class Category_API(Crud_API):
             flash('Category %s successfully updated.' % category.name)
             return redirect(url_for('showCategories'))
         else:
-            return render_template('user/category_edit.html', category=category)
+            return render_template('user/category_edit.html', category=category, categories=self.getCategories(), items=self.getItems(category.id))
 
 
     def delete(self, category_id, login_session, request):
@@ -103,4 +109,4 @@ class Category_API(Crud_API):
             flash('Category %s successfully deleted.' % name)
             return redirect(url_for('showCategories'))
         else:
-            return render_template('user/category_delete.html', category=category)
+            return render_template('user/category_delete.html', category=category, categories=self.getCategories(), items=self.getItems(category.id))

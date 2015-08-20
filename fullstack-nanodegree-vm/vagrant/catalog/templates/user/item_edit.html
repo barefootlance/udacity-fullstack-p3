@@ -1,9 +1,9 @@
 {% extends "main.html" %}
 {% block page_title %}{{category.name}}{% endblock %}
+{% block search %}'https://www.google.com/#q="{{category.name}}"'{% endblock %}
 {% block content %}
-	<div class="row divider green"><div class="col-md-12"></div></div>
 	<h1 style="text-align:center"><span style="font-weight:bold">Edit</span> {{item.name}}</h1>
-	<div class="row divider green"><div class="col-md-12"></div></div>
+	<div class="row divider blue"></div>
 	<div class="row">
 		<div class="col-md-6 col-md-offset-1 padding-top">
 			<form action="#" method = "post">
@@ -23,8 +23,8 @@
 				</div>
 				<div class="padding-bottom"></div>
 				<div class="form-group">
-					<button type="submit" class="btn btn-default" id="submit" type="submit">
-						<span class="glyphicon glyphicon-cutlery" aria-hidden="true"></span>Save</button>
+					<button type="submit" class="btn btn-default" id="submit") no-repeat;">Save
+					</button>
 				</div>
 			</form>
 		</div>

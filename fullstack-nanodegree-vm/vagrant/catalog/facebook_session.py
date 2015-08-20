@@ -67,7 +67,7 @@ class Facebook_Session(Oauth2_Session):
         # ADD PROVIDER TO LOGIN SESSION
         login_session['provider'] = 'facebook'
 
-        return render_template("login_confirm.html");
+        return render_template("login.html");
 
     def disconnect(self, login_session):
         facebook_id = login_session['facebook_id']

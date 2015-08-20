@@ -91,7 +91,7 @@ class Google_Session(Oauth2_Session):
         # ADD PROVIDER TO LOGIN SESSION
         login_session['provider'] = 'google'
 
-        return render_template("login_confirm.html");
+        return render_template("login.html");
 
 
     def disconnect(self, login_session):

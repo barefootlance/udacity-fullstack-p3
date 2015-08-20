@@ -9,16 +9,24 @@ import string
 class Item_API(Crud_API):
     """Implements CRUD API calls for items."""
 
+    def getItems(self, category_id):
+        return self.db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+
+    def getCategories(self):
+        return self.db_session.query(Category).order_by(Category.name).all()
+
     def showAll(self, category_id, request, format=None):
         try:
-            items = self.db_session.query(Item).filter_by(category_id=category_id).all()
+            items = self.getItems(category_id)
             if format == 'JSON':
                 return jsonify(Items=[i.serialize for i in items])
             elif format == 'XML':
                 return string.replace(xmlify.dumps([i.serialize for i in items], 'items'), 'items-item', 'item')
             elif not format:
                 category = self.db_session.query(Category).filter_by(id=category_id).one()
-                return render_template('item_all.html', category=category, items=items)
+                categories = self.getCategories()
+                print categories
+                return render_template('item_all.html', category=category, categories=categories, items=items, item=None)
             else:
                 abort(501)
         except:
@@ -27,14 +35,16 @@ class Item_API(Crud_API):
 
     def show(self, category_id, item_id, request, format=None):
         try:
-            category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
             if format == 'JSON':
                 return jsonify(Item=item.serialize)
             elif format == 'XML':
                 return xmlify.dumps(item.serialize, 'item')
             elif not format:
-                return render_template('item.html', category=category, item=item)
+                category = self.db_session.query(Category).filter_by(id=category_id).one()
+                categories = self.getCategories()
+                items = self.getItems(category_id)
+                return render_template('item.html', category=category, categories=categories, item=item, items=items)
             else:
                 abort(501)
         except:
@@ -60,10 +70,11 @@ class Item_API(Crud_API):
                 user_id=login_session['user_id'])
             self.db_session.add(item)
             self.db_session.commit()
+            self.db_session.refresh(item)
             flash('New item %s successfully created.' % item.name)
-            return redirect(url_for('showItems', category_id=category_id))
+            return redirect(url_for('showItem', category_id=category_id, item_id=item.id))
         else:
-            return render_template('user/item_new.html', category=category)
+            return render_template('user/item_new.html', category=category, categories=self.getCategories(), items=self.getItems(category_id))
 
 
     def edit(self, category_id, item_id, login_session, request):
@@ -88,7 +99,7 @@ class Item_API(Crud_API):
             flash('Item %s successfully updated.' % item.name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_edit.html', category=category, item=item)
+            return render_template('user/item_edit.html', category=category, categories=self.getCategories(), item=item, items=self.getItems(category_id))
 
 
     def delete(self, category_id, item_id, login_session, request):
@@ -103,7 +114,7 @@ class Item_API(Crud_API):
 
         if item.user_id != login_session['user_id']:
             flash('You are only authorized to delete items you created.')
-            return redirect(url_for('showItem', category_id=category_id, item_id=item_id))
+            return redirect(url_for('showItem', category_id=category_id, item_id=item_id, items=self.getItems()))
 
         if request.method == 'POST':
             # TODO Don't delete on Cancel!!
@@ -113,4 +124,4 @@ class Item_API(Crud_API):
             flash('Item %s successfully deleted.' % name)
             return redirect(url_for('showItems', category_id=category_id))
         else:
-            return render_template('user/item_delete.html', category=category, item=item)
+            return render_template('user/item_delete.html', category=category, categories=self.getCategories(), item=item, items=self.getItems(category_id))
