@@ -116,6 +116,7 @@
                   <hr>
                   {% endif %}
 
+                  {% block item_menu %}
                   <!-- ITEM EDITING LINKS -->
                   <!-- can only edit the category if they created it -->
                   {% if category %}
@@ -153,6 +154,7 @@
                   <hr>
                   {% endif %}
                 </div>
+                {% endblock %}
                 {% block menu %}{% endblock %}
                 <!-- END Menu -->
             </td>

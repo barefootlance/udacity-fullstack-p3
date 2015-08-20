@@ -1,13 +1,24 @@
 {% extends "main.html" %}
 {% block page_title %}Catalog{% endblock %}
+<!-- We use the items for image rotation, but we don't want them in the menu
+     so we suppress them here. -->
+{% block item_menu %}{% endblock %}
+
 {% block content %}
 <!-- basic code for image rotation modified to support multiple rotators -->
 <!-- http://www.htmlgoodies.com/beyond/javascript/article.php/3881826 -->
 
-<!-- Create one rotation placeholder for each category -->
-{% for c in categories %}
-<layer id="placeholderlayer{{c.id}}"></layer><div id="placeholderdiv{{c.id}}"></div>
-{% endfor %}
+  <div class="container" grid-auto-flow=row>
+    <!-- Create one rotation placeholder for each category -->
+    {% for c in categories %}
+      <div class="col-sm-6 col-md-4 col-lg-3 text-center"  width="220" height="342">
+        <a href="{{url_for('showItems', category_id = c.id)}}" id="placeholderlink{{c.id}}">
+          <layer id="placeholderlayer{{c.id}}"></layer><div id="placeholderdiv{{c.id}}" width=100%></div>
+        </a>
+        <p>{{c.name}}</p>
+      </div>
+      {% endfor %}
+  </div>
 
 <script>
 var howOften = 2; //number often in seconds to rotate
@@ -17,23 +28,41 @@ var ns6 = document.getElementById&&!document.all; //detect netscape 6
 // place your images, text, etc in the array elements here
 var images = new Array();
     {% for i in items %}
-      images.push({category_id: {{i.category_id}}, url: "<img src='{{i.image_url}}' height='300' width='300' border='0' />"});
+      images.push({
+        category_id: {{i.category_id}},
+        url: "<img id=image{{i.category_id}} src='{{i.image_url}}' height='300' width='300' border='0' />"
+      });
     {% endfor %}
 
 // Shuffle the array so that the images come up randomly, not ordered
 images = shuffle(images);
 
-function rotater() {
+initImages();
+
+// Initialize the images so something is there for each category right away
+// HACK! this is ugly - should only hit one image per category..
+function initImages() {
+  var arrayLength = images.length;
+  console.log(images.length);
+  for (var i = 0; i < arrayLength; i++) {
+    setImage(i);
+  }
+}
+
+function setImage(index) {
     if(document.layers) {
-        var placeholderlayer = "placeholderlayer" + images[current].category_id;
-        document.eval(placeholderlayer).document.write(images[current].url);
+        var placeholderlayer = "placeholderlayer" + images[index].category_id;
+        document.eval(placeholderlayer).document.write(images[index].url);
         document.eval(placeholderlayer).document.close();
     }
-    var placeholderdiv = "placeholderdiv" + images[current].category_id;
-    if(ns6)document.getElementById(placeholderdiv).innerHTML=images[current].url
+    var placeholderdiv = "placeholderdiv" + images[index].category_id;
+    if(ns6)document.getElementById(placeholderdiv).innerHTML=images[index].url
         if(document.all)
-            placeholderdiv.innerHTML=images[current].url;
+            placeholderdiv.innerHTML=images[index].url;
+}
 
+function rotater() {
+    setImage(current);
     current = (current==images.length-1) ? 0 : current + 1; //increment or reset
     setTimeout("rotater()",howOften*1000);
 }
