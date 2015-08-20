@@ -1,5 +1,6 @@
 from crud_api import Crud_API
 from flask import render_template, flash, redirect, url_for, abort, jsonify
+from sqlalchemy import collate
 from database_setup import Category, Item
 import datetime
 import xmlify
@@ -10,10 +11,10 @@ class Category_API(Crud_API):
 
 # TODO: duplicate code
     def getCategories(self):
-        return self.db_session.query(Category).order_by(Category.name).all()
+        return self.db_session.query(Category).order_by(collate(Category.name, 'NOCASE')).all()
 
     def getItems(self, category_id):
-        return self.db_session.query(Item).filter_by(category_id=category_id).order_by(Item.name).all()
+        return self.db_session.query(Item).filter_by(category_id=category_id).order_by(collate(Item.name, 'NOCASE')).all()
 
     def showAll(self, request, format=None):
         try:
