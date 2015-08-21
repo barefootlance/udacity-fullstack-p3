@@ -148,9 +148,11 @@
        document.getElementById('LoginWithAmazon').onclick = function() {
            options = { scope : 'profile' };
            amazon.Login.authorize(options,'/connect/amazon?state={{STATE}}');
+           /* Don't do this!!! It kills the login...dunno why
           setTimeout(function() {
            window.location.href = "/category";
           }, 4000);
+          */
        return false;
        };
     </script>
