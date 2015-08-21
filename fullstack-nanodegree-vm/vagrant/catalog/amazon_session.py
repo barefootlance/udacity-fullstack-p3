@@ -7,15 +7,18 @@ import httplib2
 import requests
 
 class Amazon_Session(Oauth2_Session):
-    """Support for a Facebook Oauth2 session.
+    """Support for a Amazon Oauth2 session.
     """
     def __init__(self, secrets_file):
         super(Amazon_Session, self).__init__(secrets_file)
-        #self._client_id = json.loads(open(self.secrets_file, 'r')
-        #                    .read())['web']['client_id']
 
     def connect(self, request, login_session, db_session):
-
+        """ Respond to a login request.
+        Args:
+            request - the http request.
+            login_session - flask session.
+            db_session - sqlite database session.
+        """
         # Validate state token
         response = self.validateStateToken(login_session, request)
         if response:
@@ -58,6 +61,10 @@ class Amazon_Session(Oauth2_Session):
         return render_template("category_all.html");
 
     def disconnect(self, login_session):
+        """ Respond to a diconnect request.
+        Args:
+            login_session - flask session.
+        """
         # TODO: log out from amazon - there's more to it than this, isn't there?
         if 'amazon_user_id' in login_session:
             del login_session['amazon_user_id']

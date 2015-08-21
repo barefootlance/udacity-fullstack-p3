@@ -15,6 +15,12 @@ class Facebook_Session(Oauth2_Session):
         #                    .read())['web']['client_id']
 
     def connect(self, request, login_session, db_session):
+        """ Respond to a login request.
+        Args:
+            request - the http request.
+            login_session - flask session.
+            db_session - sqlite database session.
+        """
         api_version = '2.4'
 
         # Validate state token
@@ -70,6 +76,10 @@ class Facebook_Session(Oauth2_Session):
         return render_template("login.html");
 
     def disconnect(self, login_session):
+        """ Respond to a diconnect request.
+        Args:
+            login_session - flask session.
+        """
         facebook_id = login_session['facebook_id']
         # The access token must me included to successfully logout
         access_token = login_session['access_token']

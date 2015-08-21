@@ -16,6 +16,12 @@ class Google_Session(Oauth2_Session):
 
 
     def connect(self, request, login_session, db_session):
+        """ Respond to a login request.
+        Args:
+            request - the http request.
+            login_session - flask session.
+            db_session - sqlite database session.
+        """
         # Validate state token
         response = self.validateStateToken(login_session, request)
         if response:
@@ -95,6 +101,10 @@ class Google_Session(Oauth2_Session):
 
 
     def disconnect(self, login_session):
+        """ Respond to a diconnect request.
+        Args:
+            login_session - flask session.
+        """
 
         # Only disconnect a connected user.
         credentials = login_session.get('credentials')

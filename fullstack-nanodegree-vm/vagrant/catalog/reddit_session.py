@@ -18,6 +18,12 @@ class Reddit_Session(Oauth2_Session):
         self.user_agent = "web app:Udacity Project 3:v0.0.1 (by /u/AFinchIsNotABird)"
 
     def connect(self, request, login_session, db_session):
+        """ Respond to a login request.
+        Args:
+            request - the http request.
+            login_session - flask session.
+            db_session - sqlite database session.
+        """
         # Validate state token
         response = self.validateStateToken(login_session, request)
         if response:
@@ -57,11 +63,20 @@ class Reddit_Session(Oauth2_Session):
         return render_template("category_all.html");
 
     def disconnect(self, login_session):
+        """ Respond to a diconnect request.
+        Args:
+            login_session - flask session.
+        """
         # Reddit doesn't track sessions, so not much to do here
         return "you have been logged out"
 
 
     def get_token(self, code, state):
+        """ Converts the authorization code to an access token.
+        Args:
+            code - access code
+            state - nonce for this login
+        """
         client_secret = json.loads(open(self.secrets_file, 'r')
                             .read())['web']['client_secret']
 

@@ -11,12 +11,25 @@ class Item_API(Crud_API):
     """Implements CRUD API calls for items."""
 
     def getItems(self, category_id):
+        """Convenience method to get all items for the given category.
+        """
         return self.db_session.query(Item).filter_by(category_id=category_id).order_by(collate(Item.name, 'NOCASE')).all()
 
     def getCategories(self):
+        """Convenience method to get all categories.
+        """
         return self.db_session.query(Category).order_by(collate(Category.name, 'NOCASE')).all()
 
     def showAll(self, category_id, request, format=None):
+        """Returns all the items from the a category in a given format.
+
+        Args:
+            category_id - category of the items
+            request - http request
+            format - The desired format of the returned data,
+                     one of 'JSON', 'XML', or None. None returns
+                     the html for a web page.
+        """
         try:
             items = self.getItems(category_id)
             if format == 'JSON':
@@ -35,6 +48,21 @@ class Item_API(Crud_API):
 
 
     def show(self, category_id, item_id, request, format=None):
+        """Returns an item from the category in a given format.
+
+        NOTE: the category_id should be the same as the Item.category_id. This
+              relationship is loosely enforced, but if they're out of sync
+              you probably have a database problem, so consider this a
+              canary in your coal mine.
+
+        Args:
+            category_id - category of the items
+            item_id - the item id
+            request - http request
+            format - The desired format of the returned data,
+                     one of 'JSON', 'XML', or None. None returns
+                     the html for a web page.
+        """
         try:
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
             if format == 'JSON':
@@ -54,6 +82,17 @@ class Item_API(Crud_API):
 
 
     def new(self, category_id, login_session, request):
+        """ Add a new item to the given category.
+
+        Args:
+            category_id - the category for the new item
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to enter the item information.
+            POST - adds the item to the database and returns a web page for the item.
+        """
         # make sure the category exists
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
@@ -80,6 +119,18 @@ class Item_API(Crud_API):
 
 
     def edit(self, category_id, item_id, login_session, request):
+        """ Change data for the given item.
+
+        Args:
+            category_id - the category for the item
+            item_id - the item
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to enter the item information.
+            POST - updates the item data and returns a web page for the item.
+        """
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()
@@ -105,6 +156,18 @@ class Item_API(Crud_API):
 
 
     def delete(self, category_id, item_id, login_session, request):
+        """ Delete the given item.
+
+        Args:
+            category_id - the category for the item
+            item_id - the item
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to confirm the deletion.
+            POST - deletes the item and returns a web page for the category.
+        """
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
             item = self.db_session.query(Item).filter_by(category_id=category_id, id=item_id).one()

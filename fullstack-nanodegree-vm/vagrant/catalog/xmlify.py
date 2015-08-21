@@ -3,6 +3,13 @@
 @author: saaj
 '''
 
+""" The only file needed from the XMLIFY project.
+
+Used to convert serialized objects to XML (similar to jsonify)
+
+For more info see: https://pypi.python.org/pypi/Xmlify/0.1.0
+"""
+
 
 import re
 import collections

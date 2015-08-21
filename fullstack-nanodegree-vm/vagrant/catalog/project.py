@@ -24,9 +24,7 @@ db_session = DBSession()
 category_api = Category_API(db_session)
 item_api = Item_API(db_session)
 
-
-def getCurrentUserId(): # TODO!
-    return None
+### CATEGORY ENDPOINTS ###
 
 @app.route('/', methods=['GET'])
 @app.route('/catalog/', methods=['GET'])
@@ -54,6 +52,9 @@ def editCategory(category_id):
 def deleteCategory(category_id):
     return category_api.delete(category_id, login_session, request)
 
+### END CATEGORY ENDPOINTS ###
+
+### ITEM ENDPOINTS ###
 
 @app.route('/category/<int:category_id>/item/', methods=['GET'])
 def showItems(category_id):
@@ -79,6 +80,9 @@ def editItem(category_id, item_id):
 def deleteItem(category_id, item_id):
     return item_api.delete(category_id, item_id, login_session, request)
 
+### END ITEM ENDPOINTS ###
+
+### OAUTH2 ENDPOINTS ###
 
 @app.route('/connect/google', methods=['POST'])
 def googleConnect():
@@ -112,16 +116,6 @@ def amazonConnect():
     # logins (or maybe not - maybe they should act like this...consistency!)
     # Anyway, we hop straight back to the main page.
     return showCategories()
-
-
-@app.route('/category/<int:category_id>/edit/', methods=['GET', 'POST'])
-def editCategory(category_id):
-    return category_api.edit(category_id, login_session, request)
-
-
-@app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
-def deleteCategory(category_id):
-    return category_api.delete(category_id, login_session, request)
 
 
 @app.route('/login')
@@ -161,6 +155,11 @@ def disconnect():
         return redirect(url_for('showCategories'))
 
 
+### END OAUTH2 ENDPOINTS ###
+
+
+### JSON and XML ENDPOINTS ###
+
 @app.route('/category/<int:category_id>/JSON', methods=['GET'])
 @app.route('/category/<int:category_id>/XML', methods=['GET'])
 def categoryJSON(category_id):
@@ -199,6 +198,8 @@ def itemsJSON(category_id):
         return item_api.showAll(category_id, request, format)
     except:
         abort(404)
+
+### JSON and XML ENDPOINTS ###
 
 ### CSRF PROTECTION
 # Drawn from http://flask.pocoo.org/snippets/3/

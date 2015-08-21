@@ -11,15 +11,29 @@ class Category_API(Crud_API):
 
 # TODO: duplicate code
     def getCategories(self):
+        """Convenience method to get all categories.
+        """
         return self.db_session.query(Category).order_by(collate(Category.name, 'NOCASE')).all()
 
     def getItems(self, category_id):
+        """Convenience method to get all items for the given category.
+        """
         return self.db_session.query(Item).filter_by(category_id=category_id).order_by(collate(Item.name, 'NOCASE')).all()
 
     def getAllItems(self):
+        """Convenience method to get all items regardless of category.
+        """
         return self.db_session.query(Item).order_by(collate(Item.name, 'NOCASE')).all()
 
     def showAll(self, request, format=None):
+        """Returns all the categories in a given format.
+
+        Args:
+            request - http request
+            format - The desired format of the returned data,
+                     one of 'JSON', 'XML', or None. None returns
+                     the html for a web page.
+        """
         try:
             categories = self.getCategories()
             if format == 'JSON':
@@ -36,6 +50,16 @@ class Category_API(Crud_API):
 
 
     def show(self, category_id, request, format=None):
+        """Returns the category in a given format.
+
+        Args:
+            category_id - category of the items
+            item_id - the item id
+            request - http request
+            format - The desired format of the returned data,
+                     one of 'JSON', 'XML', or None. None returns
+                     the html for a web page.
+        """
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
             if format == 'JSON':
@@ -51,6 +75,16 @@ class Category_API(Crud_API):
 
 
     def new(self, login_session, request):
+        """ Add a new category to the database.
+
+        Args:
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to enter the category information.
+            POST - adds the category to the database and returns a web page for the category.
+        """
 
         if 'username' not in login_session:
             return redirect('/login')
@@ -69,6 +103,17 @@ class Category_API(Crud_API):
 
 
     def edit(self, category_id, login_session, request):
+        """ Change data for the given category.
+
+        Args:
+            category_id - the category
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to enter the category information.
+            POST - updates the category data and returns a web page for the category.
+        """
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
         except:
@@ -91,6 +136,17 @@ class Category_API(Crud_API):
 
 
     def delete(self, category_id, login_session, request):
+        """ Delete the given category.
+
+        Args:
+            category_id - the category for the item
+            login_session - flask session
+            request - http request
+
+        HTTP Methods:
+            GET - returns a web page for the user to confirm the deletion.
+            POST - deletes the item and returns a web page for the catalog.
+        """
         try:
             category = self.db_session.query(Category).filter_by(id=category_id).one()
         except:
