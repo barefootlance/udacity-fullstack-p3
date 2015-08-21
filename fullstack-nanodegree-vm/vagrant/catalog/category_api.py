@@ -65,7 +65,7 @@ class Category_API(Crud_API):
             flash('New category %s successfully created.' % category.name)
             return redirect(url_for('newItem', category_id=category.id))
         else:
-            return render_template('user/category_new.html', user_id=login_session['user_id'], categories=self.getCategories())
+            return render_template('user/category_new.html', categories=self.getCategories())
 
 
     def edit(self, category_id, login_session, request):
@@ -85,7 +85,7 @@ class Category_API(Crud_API):
             category.name = request.form['name']
             self.db_session.commit()
             flash('Category %s successfully updated.' % category.name)
-            return redirect(url_for('showCategories'))
+            return redirect(url_for('showItems', category_id=category_id))
         else:
             return render_template('user/category_edit.html', category=category, categories=self.getCategories(), items=self.getItems(category.id))
 

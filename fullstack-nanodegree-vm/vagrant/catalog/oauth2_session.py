@@ -7,14 +7,14 @@ class Oauth2_Session(object):
 
 
     def __del__(self):
-        self.disconnect()
+        self.disconnect(None)
 
 
     def connect(self, request, login_session, db_session):
         raise NotImplementedError( "Should have implemented this" )
 
 
-    def disconnect(self, request, login_session, db_session):
+    def disconnect(self, login_session):
         raise NotImplementedError( "Should have implemented this" )
 
 

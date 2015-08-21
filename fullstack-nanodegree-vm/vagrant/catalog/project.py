@@ -7,7 +7,8 @@ from item_api import Item_API
 from google_session import Google_Session
 from facebook_session import Facebook_Session
 from amazon_session import Amazon_Session
-import random, string, sys
+from csrf import generate_csrf_token
+import sys
 
 app = Flask(__name__)
 
@@ -116,10 +117,8 @@ def deleteCategory(category_id):
 
 @app.route('/login')
 def showLogin():
-    state = ''.join(random.choice(string.ascii_uppercase + string.digits)
-                    for x in xrange(32))
+    state = generate_csrf_token()
     login_session['state'] = state
-    # return "The current session state is %s" % login_session['state']
     return render_template('login.html', STATE=state)
 
 
@@ -150,8 +149,8 @@ def disconnect():
         return redirect(url_for('showCategories'))
 
 
-@app.route('/category/<int:category_id>/JSON')
-@app.route('/category/<int:category_id>/XML')
+@app.route('/category/<int:category_id>/JSON', methods=['GET'])
+@app.route('/category/<int:category_id>/XML', methods=['GET'])
 def categoryJSON(category_id):
     try:
         format = request.path.split('/')[-1]
@@ -160,8 +159,8 @@ def categoryJSON(category_id):
         abort(404)
 
 
-@app.route('/category/JSON')
-@app.route('/category/XML')
+@app.route('/category/JSON', methods=['GET'])
+@app.route('/category/XML', methods=['GET'])
 def categoriesJSON():
     try:
         format = request.path.split('/')[-1]
@@ -170,8 +169,8 @@ def categoriesJSON():
         abort(404)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/JSON')
-@app.route('/category/<int:category_id>/item/<int:item_id>/XML')
+@app.route('/category/<int:category_id>/item/<int:item_id>/JSON', methods=['GET'])
+@app.route('/category/<int:category_id>/item/<int:item_id>/XML', methods=['GET'])
 def itemJSON(category_id, item_id):
     try:
         format = request.path.split('/')[-1]
@@ -180,8 +179,8 @@ def itemJSON(category_id, item_id):
         abort(404)
 
 
-@app.route('/category/<int:category_id>/item/JSON')
-@app.route('/category/<int:category_id>/item/XML')
+@app.route('/category/<int:category_id>/item/JSON', methods=['GET'])
+@app.route('/category/<int:category_id>/item/XML', methods=['GET'])
 def itemsJSON(category_id):
     try:
         format = request.path.split('/')[-1]
@@ -189,6 +188,37 @@ def itemsJSON(category_id):
     except:
         abort(404)
 
+### CSRF PROTECTION
+# Drawn from http://flask.pocoo.org/snippets/3/
+# NOTE: we implement CSRF protection two different
+# ways. If we have access to the form then we include
+# an invisible input in the form and use that to
+# pass the nonce. However, if we don't have the form
+# (as is the case with Oauth2 logins), we pass then
+# value in the 'state' session value (as demonstrated
+# in the oauth course sample).
+@app.before_request
+def csrf_protect():
+    if request.method == "POST":
+        token = login_session.pop('_csrf_token', None)
+        print token
+        print login_session.get('state')
+        print request.form.get('_csrf_token')
+        # not from this session
+        if not token:
+            abort(403)
+
+        # Look for the form value first.
+        # Doesn't match the value in the form (anything but oauth2 logins)
+        if request.form.get('_csrf_token'):
+            if token != request.form.get('_csrf_token'):
+                abort(403)
+        # Doesn't match the state value in the session (only oauth2 logins)
+        elif login_session.get('state') != token:
+            abort(403)
+
+app.jinja_env.globals['csrf_token'] = generate_csrf_token
+### END CSRF PROTECTION
 
 if __name__ == '__main__':
     app.secret_key = 'ultra_secret_key'
