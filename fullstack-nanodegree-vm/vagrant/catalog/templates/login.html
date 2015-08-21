@@ -164,5 +164,46 @@
     </script>
     -->
 <!-- END AMAZON SIGN IN -->
+
+<!-- REDDIT SIGN IN -->
+<div class="col-sm-6 col-md-4 col-lg-3 text-center" style="padding-below:30px" width="220" height="342">
+    <a id="LoginWithReddit" href="{{url_for('redditConnect', method='POST')}}">
+       <img border="0"
+            alt="Login with Reddit"
+            src="static/reddit-logo-01-674x501.jpg"
+            width="156" />
+    </a>
+    <div id="reddit-root"></div>
+  	<div style="padding-bottom:30px"></div>
+  </div>
+  <script>
+    // from: http://stackoverflow.com/questions/111529/create-query-parameters-in-javascript
+    function encodeData(data) {
+      return Object.keys(data).map(function(key) {
+          return [key, data[key]].map(encodeURIComponent).join("=");
+      }).join("&");
+    }
+
+    $(document).ready(function() {
+            // NOTE: the URI must *EXACTLY* match the redirect uri you've
+            // given to reddit. For the purpose of this particular app, that's:
+            // http://localhost:5000/connect/reddit
+            var redirect_uri = "{{url_for('redditConnect', _external=True)}}";
+            console.log(redirect_uri);
+            var params = {"client_id": "cYk7GpcvF8gkZA",
+              "response_type": "code",
+              "state": "{{STATE}}",
+              "redirect_uri": redirect_uri,
+              "duration": "temporary",
+              "scope": "identity"};
+           console.log(params);
+           p2 = encodeData(params);
+           url = "https://ssl.reddit.com/api/v1/authorize?" + p2;
+           console.log(url);
+           $('#LoginWithReddit').attr("href", url);
+     });
+
+  </script>
+<!-- END REDDIT SIGN IN -->
 </div>
 {% endblock %}

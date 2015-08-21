@@ -7,6 +7,7 @@ from item_api import Item_API
 from google_session import Google_Session
 from facebook_session import Facebook_Session
 from amazon_session import Amazon_Session
+from reddit_session import Reddit_Session
 from csrf import generate_csrf_token
 import sys
 
@@ -93,6 +94,14 @@ def facebookConnect():
     return result
 
 
+@app.route('/connect/reddit', methods=['GET'])
+def redditConnect():
+    oauth2_session = Reddit_Session('secrets/reddit_secrets.json')
+    result = oauth2_session.connect(request, login_session, db_session)
+    #return result
+    return showCategories()
+
+
 @app.route('/connect/amazon', methods=['GET'])
 def amazonConnect():
     oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
@@ -136,6 +145,9 @@ def disconnect():
             oauth2_session.disconnect(login_session)
         elif provider == 'amazon':
             oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
+            oauth2_session.disconnect(login_session)
+        elif provider == 'reddit':
+            oauth2_session = Reddit_Session('secrets/reddit_secrets.json')
             oauth2_session.disconnect(login_session)
 
         if oauth2_session:
@@ -201,9 +213,7 @@ def itemsJSON(category_id):
 def csrf_protect():
     if request.method == "POST":
         token = login_session.pop('_csrf_token', None)
-        print token
-        print login_session.get('state')
-        print request.form.get('_csrf_token')
+
         # not from this session
         if not token:
             abort(403)

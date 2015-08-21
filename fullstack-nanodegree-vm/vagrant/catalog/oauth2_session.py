@@ -28,7 +28,7 @@ class Oauth2_Session(object):
 
     def validateStateToken(self, login_session, request):
         if request.args.get('state') != login_session['state']:
-            response = make_response(json.dumps('Invalid state parameter.'), 401)
+            response = make_response(json.dumps('Invalid state parameter.'), 403)
             response.headers['Content-Type'] = 'application/json'
             return response
         return None

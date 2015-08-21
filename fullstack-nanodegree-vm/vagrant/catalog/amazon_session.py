@@ -15,9 +15,6 @@ class Amazon_Session(Oauth2_Session):
         #                    .read())['web']['client_id']
 
     def connect(self, request, login_session, db_session):
-        print 'AMAZON'
-        print request
-        #api_version = '2.4'
 
         # Validate state token
         response = self.validateStateToken(login_session, request)
