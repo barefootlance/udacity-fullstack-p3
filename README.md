@@ -77,20 +77,20 @@ To view the main page, open a web browser and enter `http://localhost:5000`. Not
 There are four endpoints for both JSON and XML. They provide access to a single category, a list of all categories, an item, and a list of all items for a particular category. NOTE: all timestamps are UTC.
 
 Category:
-  /category/<int:category_id>/JSON
-  /category/<int:category_id>/XML
+  * /category/<int:category_id>/JSON
+  * /category/<int:category_id>/XML
 
 Category list:
-  /category/JSON
-  /category/XML
+  * /category/JSON
+  * /category/XML
 
 Item:
-  /category/<int:category_id>/item/<int:item_id>/JSON
-  /category/<int:category_id>/item/<int:item_id>/XML
+  * /category/<int:category_id>/item/<int:item_id>/JSON
+  * /category/<int:category_id>/item/<int:item_id>/XML
 
 Item list:
-  /category/<int:category_id>/item/JSON
-  /category/<int:category_id>/item/XML
+  * /category/<int:category_id>/item/JSON
+  * /category/<int:category_id>/item/XML
 
 ## Conclusions and Reflections
 
