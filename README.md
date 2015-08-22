@@ -19,10 +19,14 @@ Running down the points in the rubric:
 This project was tested on Python 2.7 using the following additional libararies:
 
 Flask==0.9
+
 SQLAlchemy==0.8.4
+
 httplib2==0.9.1
+
 oauth2client==1.4.12
-requests==2.2.1
+
+requests==2.2.1 
 
 ## Installation
 
