@@ -1,4 +1,5 @@
-from flask import Flask, request, session as login_session, render_template, flash, redirect, url_for, abort
+from flask import Flask, request, session as login_session
+from flask import render_template, flash, redirect, url_for, abort
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from database_setup import Base, Category, Item
@@ -14,7 +15,8 @@ import sys
 app = Flask(__name__)
 
 # Connect to Database and create database session
-# good sqlalchemy tips: http://alextechrants.blogspot.com/2013/11/10-common-stumbling-blocks-for.html
+# good sqlalchemy tips:
+# alextechrants.blogspot.com/2013/11/10-common-stumbling-blocks-for.html
 engine = create_engine('sqlite:///catalog.db')
 Base.metadata.bind = engine
 
@@ -48,7 +50,9 @@ def editCategory(category_id):
     return category_api.edit(category_id, login_session, request)
 
 
-@app.route('/category/<int:category_id>/delete/', methods=['GET', 'POST'])
+@app.route(
+    '/category/<int:category_id>/delete/',
+    methods=['GET', 'POST'])
 def deleteCategory(category_id):
     return category_api.delete(category_id, login_session, request)
 
@@ -61,22 +65,30 @@ def showItems(category_id):
     return item_api.showAll(category_id, request)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/', methods=['GET'])
+@app.route(
+    '/category/<int:category_id>/item/<int:item_id>/',
+    methods=['GET'])
 def showItem(category_id, item_id):
     return item_api.show(category_id, item_id, request)
 
 
-@app.route('/category/<int:category_id>/item/new/', methods=['GET', 'POST'])
+@app.route(
+    '/category/<int:category_id>/item/new/',
+    methods=['GET', 'POST'])
 def newItem(category_id):
     return item_api.new(category_id, login_session, request)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/edit/', methods=['GET', 'POST'])
+@app.route(
+    '/category/<int:category_id>/item/<int:item_id>/edit/',
+    methods=['GET', 'POST'])
 def editItem(category_id, item_id):
     return item_api.edit(category_id, item_id, login_session, request)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/delete/', methods=['GET', 'POST'])
+@app.route(
+    '/category/<int:category_id>/item/<int:item_id>/delete/',
+    methods=['GET', 'POST'])
 def deleteItem(category_id, item_id):
     return item_api.delete(category_id, item_id, login_session, request)
 
@@ -113,8 +125,8 @@ def amazonConnect():
     #return result
     # TODO HACK: we're getting Amazon synchronously (which is how they
     # do it in their example). Would like it to behave like the other
-    # logins (or maybe not - maybe they should act like this...consistency!)
-    # Anyway, we hop straight back to the main page.
+    # logins (or maybe not - maybe they should act like this...
+    # consistency!) Anyway, we hop straight back to the main page.
     return showCategories()
 
 
@@ -132,16 +144,20 @@ def disconnect():
         oauth2_session = None
         provider = login_session['provider']
         if provider == 'google':
-            oauth2_session = Google_Session('secrets/google_secrets.json')
+            oauth2_session = Google_Session(
+                'secrets/google_secrets.json')
             oauth2_session.disconnect(login_session)
         elif provider == 'facebook':
-            oauth2_session = Facebook_Session('secrets/facebook_secrets.json')
+            oauth2_session = Facebook_Session(
+                'secrets/facebook_secrets.json')
             oauth2_session.disconnect(login_session)
         elif provider == 'amazon':
-            oauth2_session = Amazon_Session('secrets/amazon_secrets.json')
+            oauth2_session = Amazon_Session(
+                'secrets/amazon_secrets.json')
             oauth2_session.disconnect(login_session)
         elif provider == 'reddit':
-            oauth2_session = Reddit_Session('secrets/reddit_secrets.json')
+            oauth2_session = Reddit_Session(
+                'secrets/reddit_secrets.json')
             oauth2_session.disconnect(login_session)
 
         if oauth2_session:
@@ -180,8 +196,12 @@ def categoriesJSON():
         abort(404)
 
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/JSON', methods=['GET'])
-@app.route('/category/<int:category_id>/item/<int:item_id>/XML', methods=['GET'])
+@app.route(
+    '/category/<int:category_id>/item/<int:item_id>/JSON',
+    methods=['GET'])
+@app.route(
+    '/category/<int:category_id>/item/<int:item_id>/XML',
+    methods=['GET'])
 def itemJSON(category_id, item_id):
     try:
         format = request.path.split('/')[-1]
@@ -220,11 +240,13 @@ def csrf_protect():
             abort(403)
 
         # Look for the form value first.
-        # Doesn't match the value in the form (anything but oauth2 logins)
+        # Doesn't match the value in the form
+        # (anything but oauth2 logins)
         if request.form.get('_csrf_token'):
             if token != request.form.get('_csrf_token'):
                 abort(403)
-        # Doesn't match the state value in the session (only oauth2 logins)
+        # Doesn't match the state value in the session
+        # (only oauth2 logins)
         elif login_session.get('state') != token:
             abort(403)
 
