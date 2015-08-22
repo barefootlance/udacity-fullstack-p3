@@ -1,4 +1,5 @@
 # udacity-fullstack-p3
+
 Udacity fullstack project #3: Catalog
 
 This is an implementation of the specification for Tournament Results, the second project of the Udacity Full Stack Web Developer Nanodegree.
@@ -14,17 +15,60 @@ Running down the points in the rubric:
 * DELETE - a logged in user can delete items they create. They can also delete categories they create. NOTE: deleting a category deletes all the items associated with it, regardless of whether the user created the items or not.
 * CSRF - cross-site scripting is addressed for delete, as well as for create and update, all three of which are implemented using POST methods. Additionally the Oauth2 nonce processing in the Oauth training project is used here as well.
 
-## Running the project
+## Requirements
+This project was tested on Python 2.7 using the following additional libararies:
+
+Flask==0.9
+SQLAlchemy==0.8.4
+httplib2==0.9.1
+oauth2client==1.4.12
+requests==2.2.1
+
+## Installation
 
 * Clone the repo: `git clone https://github.com/barefootlance/udacity-fullstack-p3.git`.
+
+### To run on the provided VM
 * Install Vagrant
 * Install Virtual Box.
-* `cd fullstack-nanodegree-vm/vagrant/catalog` and start up the virtual machine (vagrant up), move to the virtual command line (vagrant ssh).
-* `cd /vagrant`
-* Run `python project.py`
-* Open a web browser and enter `http://localhost:5000` to view the webpage. Note using `127.0.0.1:5000` will show the page as well, but not all Oauth2 providers will work from that address.
 
-## Accessing JSON and XML endpoints
+### To run on your own Python installation
+* Install the required libraries list in Requirements. This is most easily done with by running `pip install -r <path to>/fullstack-nanodegree-vm/vagrant/catalog/requirements.txt`.
+
+## Setup
+The download includes a database pre-populated with sample categories and items.
+
+If you would like to start with a clean database:
+* Delete the catalog.db file.
+* Create a new database by running `python database_setup.py`.
+
+## Running the project
+
+* `cd <path to>/fullstack-nanodegree-vm/vagrant/catalog`
+
+To run on the virtual machine:
+  * start up the virtual machine with the command `vagrant up`
+  * ssh into the virtual machine with the command `vagrant ssh`
+  * `cd /vagrant`
+
+* Whether running on the VM or not, now run `python project.py` to start the web server.
+
+By default the program is served on port 5000. You can change the port by editing project.py and changing the line `app.run(host='0.0.0.0', port=5000)` to the port you want. NOTE: if you run using the VM you will also need to make sure the port is exposed by VM by editing Vagrantfile and changing the line `config.vm.network "forwarded_port", guest: 5000, host: 5000`, where the guest port is the port in project.py and the host port is the port you want to use on your machine.
+
+## Usage
+
+To view the main page, open a web browser and enter `http://localhost:5000`. Note using `127.0.0.1:5000` will show the page as well, but not all Oauth2 providers will work from that address; this is because some providers allow only a single address for a redirect uri, so can't support both localhost and 127.0.0.1.
+
+* The site is a generic catalog of items.
+* The left side is a menu listing different categories of items. Clicking on a category takes you to a page listing the items in a category. The right (content) pane showing rotating images for each of the categories. Clicking on an image takes you to the page for that category.
+* For a category page, the items are displayed both in the menu and with an image in the content pane. Clicking on either takes you to a page for that item.
+* An item page displays all the information for that item.
+* At the top of each page is a link for logging in. Categories and items can be added, edited, and deleted by logged in users. However, a user can only edit or delete items they have created. Login in requires an account on one of the Oauth2 providers shown on the login page: Google, Facebook, Amazon, or Reddit.
+* When logged in, the menu will contain links for editing categories and items based on the page you are on and whether or not you created the category or item. The person who created the category or item is listed at the bottom of the page (but only for logged in users).
+* For categories and items, clicking on the name displays a Google search of the term in a separate tab.
+* Clicking on images (except the rotating images on the main Catalog page) opens a page to see a full sized view of the image.
+
+### Accessing JSON and XML endpoints
 
 There are four endpoints for both JSON and XML. They provide access to a single category, a list of all categories, an item, and a list of all items for a particular category. NOTE: all timestamps are UTC.
 
@@ -44,15 +88,13 @@ Item list:
   /category/<int:category_id>/item/JSON
   /category/<int:category_id>/item/XML
 
-## Code refactoring
+## Conclusions and Reflections
 
 Although this project is heavily based on existing code, it is large enough that refactoring of the code from previous projects was required. My experience with Python is pretty limited, so if it looks like someone is trying to impose C++ OOP sensibilities on Python, you're probably right.
 
 The main project.py file runs the web server and acts as a router for the endpoints, but all the heavy lifting has been moved to other modules.
 
 It was relatively obvious that I needed to pull the oauth handling code into different provider classes, but I have no idea if I used best practices in doing so. The structure that I added did make it easier to add new providers (Amazon and Reddit), but it feels like there should be more commonality, and I don't know if using a "virtual" base class is best Python practice, but it did give me a place to put shared oauth methods.
-
-## Known issues
 
 The code feels pretty good, at least for the quality needed for this project (in my mind anyway, your mileage may vary). There are some things I would want to address for production code.
 
