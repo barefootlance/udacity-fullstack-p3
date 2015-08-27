@@ -1,4 +1,6 @@
-# udacity-fullstack-p3
+# udacity-fullstack-p3 - PostgreSQL
+
+This is a fork of the p3 project that changes the database from Sqlite to PostgreSQL. This change is necessary to complete project 5, but I want to leave the original submission for p3 in place.
 
 Udacity fullstack project #3: Catalog
 
@@ -26,7 +28,7 @@ httplib2==0.9.1
 
 oauth2client==1.4.12
 
-requests==2.2.1 
+requests==2.2.1
 
 ## Installation
 
