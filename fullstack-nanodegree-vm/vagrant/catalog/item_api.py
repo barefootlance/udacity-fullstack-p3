@@ -1,7 +1,6 @@
 from crud_api import Crud_API
 from flask import render_template, flash, redirect, url_for, abort, jsonify
 from database_setup import Category, Item, User
-from sqlalchemy import collate
 import json
 import datetime
 import xmlify
@@ -15,14 +14,14 @@ class Item_API(Crud_API):
         """
         return self.db_session.query(Item) \
                    .filter_by(category_id=category_id) \
-                   .order_by(collate(Item.name, 'NOCASE')) \
+                   .order_by(Item.name) \
                    .all()
 
     def getCategories(self):
         """Convenience method to get all categories.
         """
         return self.db_session.query(Category) \
-                   .order_by(collate(Category.name, 'NOCASE')) \
+                   .order_by(Category.name) \
                    .all()
 
     def showAll(self, category_id, request, format=None):

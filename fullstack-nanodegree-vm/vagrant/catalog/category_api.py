@@ -1,7 +1,6 @@
 from crud_api import Crud_API
 from flask import render_template, flash, redirect
 from flask import url_for, abort, jsonify
-from sqlalchemy import collate
 from database_setup import Category, Item
 import datetime
 import xmlify
@@ -16,20 +15,20 @@ class Category_API(Crud_API):
         """
         return self.db_session \
                    .query(Category) \
-                   .order_by(collate(Category.name, 'NOCASE')).all()
+                   .order_by(Category.name).all()
 
     def getItems(self, category_id):
         """Convenience method to get all items for the given category.
         """
         return self.db_session.query(Item) \
                    .filter_by(category_id=category_id) \
-                   .order_by(collate(Item.name, 'NOCASE')).all()
+                   .order_by(Item.name).all()
 
     def getAllItems(self):
         """Convenience method to get all items regardless of category.
         """
         return self.db_session.query(Item) \
-                   .order_by(collate(Item.name, 'NOCASE')).all()
+                   .order_by(Item.name).all()
 
     def showAll(self, request, format=None):
         """Returns all the categories in a given format.

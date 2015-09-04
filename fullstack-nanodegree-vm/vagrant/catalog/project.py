@@ -17,7 +17,8 @@ app = Flask(__name__)
 # Connect to Database and create database session
 # good sqlalchemy tips:
 # alextechrants.blogspot.com/2013/11/10-common-stumbling-blocks-for.html
-engine = create_engine('sqlite:///catalog.db')
+#engine = create_engine('sqlite:///catalog.db')
+engine = create_engine("postgresql+psycopg2://catalog:catalog@localhost/catalog")
 Base.metadata.bind = engine
 
 DBSession = sessionmaker(bind=engine)

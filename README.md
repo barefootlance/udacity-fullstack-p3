@@ -41,12 +41,12 @@ requests==2.2.1
 ### To run on your own Python installation
 * Install the required libraries list in Requirements. This is most easily done with by running `pip install -r <path to>/fullstack-nanodegree-vm/vagrant/catalog/requirements.txt`.
 
-## Setup
-The download includes a database pre-populated with sample categories and items.
-
-If you would like to start with a clean database:
-* Delete the catalog.db file.
-* Create a new database by running `python database_setup.py`.
+* Install and configure PostgreSQL: `sudo apt-get -y install postgresql-9.3 postgresql-server-dev-9.3 postgresql-client-9.3`
+* Create a new linux user named catalog with password 'catalog': `sudo useradd -p catalog catalog`
+* Create a new postgresql user named catalog: `sudo --user=postgres createuser -DRS catalog`
+* Give the postgresql user the password 'catalog': `sudo --user=postgres createuser -DRS catalog`
+* Create a database called (surprise!) catalog: `sudo --user=postgres psql -c "CREATE DATABASE catalog"`
+* Give the user permissions on the database: `sudo --user=postgres psql -c "GRANT ALL ON DATABASE catalog TO catalog"`
 
 ## Running the project
 
